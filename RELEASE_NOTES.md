@@ -1,7 +1,9 @@
-# v2.0.18
+# v2.0.19
 
 ### 한국어
-- 도안을 파는 상점과 떨어뜨리는 몬스터 이름이 이 애드온의 언어 설정을 따르도록 고쳤습니다.
+- 도안 판매처 목록에서 다른 진영 상인을 뺍니다.
+- 공유 기록에 상점 NPC의 진영과 위치를 함께 남겨, 판매처 목록에서 다른 진영 상인을 뺄 수 있게 했습니다.
 
 ### English
-- Names of the shops and monsters for recipe scrolls now follow this addon's language setting.
+- Recipe vendor lists leave out the other faction's vendors.
+- Shared records now keep the faction and location of shop NPCs, so vendor lists can leave out the other faction's vendors.
