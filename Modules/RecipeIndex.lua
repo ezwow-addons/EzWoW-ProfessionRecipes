@@ -55,6 +55,9 @@ local function useSharedRecipes(D)
         if type(p) ~= "table" or type(p.recipes) ~= "table" or type(p.cats) ~= "table" then return end
     end
     if next(profs) == nil or ns.Data == profs then return end
+    -- the bundled tables come with every release (never older): the shared ones only
+    -- stand in when they are missing
+    if type(ns.Data) == "table" and next(ns.Data) ~= nil then return end
     ns.Data = profs
     itemNames = names
     ns.ItemNames = names

@@ -425,7 +425,91 @@ local function buildScrollIndex()
     return index
 end
 
--- "Sold by: ... / Drops from: ..." for a recipe, or nil
+-----------------------------------------------------------------------------
+-- Trainers EzWoW users saw teach a recipe (shared records kind "U": the spells
+-- a trainer's window lists, this character's and those other players confirmed).
+-- The trainer's spell is the recipe's spell.
+-----------------------------------------------------------------------------
+local trainerIndex, trainerIndexAt = nil, -1000
+local TRAINER_NAMES = 4
+
+-- spellID -> { npcID, ... }
+local function buildTrainerIndex()
+    local index = {}
+    local share = ns.Share
+    if not (share and type(share.Store) == "function") then return index end
+    local okStore, store = pcall(share.Store, "U")
+    if not okStore or type(store) ~= "table" then return index end
+    for key, row in pairs(store) do
+        local npcID = tonumber(key)
+        if npcID and type(row) == "table" then
+            local spells
+            if type(share.GetTrainerSpells) == "function" then
+                local ok, list = pcall(share.GetTrainerSpells, npcID)
+                if ok and type(list) == "table" then spells = list end
+            end
+            if not spells then
+                -- own: a list or a set of spell IDs; got: { [spellID] = true }
+                local set = {}
+                for k, v in pairs(type(row.own) == "table" and row.own or {}) do
+                    if v == true and type(k) == "number" then set[k] = true
+                    elseif type(v) == "number" then set[v] = true end
+                end
+                for id, ok in pairs(type(row.got) == "table" and row.got or {}) do
+                    if ok == true and type(id) == "number" then set[id] = true end
+                end
+                spells = {}
+                for id in pairs(set) do spells[#spells + 1] = id end
+            end
+            for _, id in ipairs(spells) do
+                if type(id) == "number" then
+                    index[id] = index[id] or {}
+                    table.insert(index[id], npcID)
+                end
+            end
+        end
+    end
+    return index
+end
+
+-- "Taught in the game: <trainers> +N" for a recipe, or nil (other-faction trainers
+-- and trainers without a known name are left out)
+function RecipeBrowserWindow.trainerSourceText(r, nameOf)
+    local spellID = r and tonumber(r[R_SPELL])
+    local share = ns.Share
+    if not (spellID and share) then return nil end
+    local now = GetTime and GetTime() or 0
+    -- built again a while later (new records)
+    if not trainerIndex or now - trainerIndexAt > 60 or now < trainerIndexAt then
+        local ok, index = pcall(buildTrainerIndex)
+        trainerIndex = ok and index or {}
+        trainerIndexAt = now
+    end
+    local list = trainerIndex[spellID]
+    if not list then return nil end
+    local names, seenName = {}, {}
+    for _, npcID in ipairs(list) do
+        local other = false
+        if type(share.IsOtherSide) == "function" then
+            local ok, res = pcall(share.IsOtherSide, npcID)
+            other = ok and res == true
+        end
+        local n = not other and nameOf("n" .. npcID)
+        if n and not seenName[n] then
+            seenName[n] = true
+            names[#names + 1] = n
+        end
+    end
+    if #names == 0 then return nil end
+    table.sort(names)
+    local shown = {}
+    for i = 1, math.min(#names, TRAINER_NAMES) do shown[i] = names[i] end
+    local text = table.concat(shown, ", ")
+    if #names > TRAINER_NAMES then text = text .. " +" .. (#names - TRAINER_NAMES) end
+    return "|cff4bc8e8" .. L.seenTrainer .. ":|r " .. text
+end
+
+-- "Taught by: ... / Sold by: ... / Drops from: ..." for a recipe, or nil
 function RecipeBrowserWindow.sharedSourceText(r)
     local share = ns.Share
     if not share then return nil end
@@ -445,12 +529,14 @@ function RecipeBrowserWindow.sharedSourceText(r)
             end
         end
     end
-    if #scrolls == 0 then return nil end
     local function nameOf(src)
         if type(share.SourceName) ~= "function" then return nil end
         local ok, n = pcall(share.SourceName, src, ns.ACTIVE_LANG)
         return ok and type(n) == "string" and n ~= "" and n or nil
     end
+    local okTaught, taught = pcall(RecipeBrowserWindow.trainerSourceText, r, nameOf)
+    if not (okTaught and taught) then taught = nil end
+    if #scrolls == 0 and not taught then return nil end
     local sold, dropped, seenName = {}, {}, {}
     for _, id in ipairs(scrolls) do
         local okV, vendors = pcall(share.GetVendors, id)
@@ -471,6 +557,7 @@ function RecipeBrowserWindow.sharedSourceText(r)
         end
     end
     local lines = {}
+    if taught then lines[#lines + 1] = taught end
     if #sold > 0 then lines[#lines + 1] = "|cffaee26a" .. L.seenSold .. ":|r " .. table.concat(sold, ", ") end
     if #dropped > 0 then lines[#lines + 1] = "|cffea837e" .. L.seenDrop .. ":|r " .. table.concat(dropped, ", ") end
     if #lines == 0 then return nil end
@@ -511,7 +598,7 @@ function refreshDetail()
     dataEntry.skill:SetText(L.skill .. "  " .. resolveSkillText(r))
 
     local where = resolveRecipeSrc(r)
-    -- where EzWoW users bought or looted the scroll in the game
+    -- the trainers EzWoW users saw teach it, where they bought or looted the scroll in the game
     local okSeen, seen = pcall(RecipeBrowserWindow.sharedSourceText, r)
     if okSeen and seen then where = (where ~= "" and (where .. "\n") or "") .. seen end
     dataEntry.where:SetText(where)
