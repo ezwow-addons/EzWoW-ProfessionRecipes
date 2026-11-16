@@ -68,6 +68,8 @@ end
 
 -- called once the addon is loaded (out of combat, or the load waits for the combat to end)
 function RecipeCatalogIndex.loadSharedData()
+    -- with the bundled recipe table the shared module is not loaded at all (memory)
+    if type(ns.Data) == "table" and next(ns.Data) ~= nil then return end
     local D = sharedAPI()
     if not D then return end
     pcall(D.Load, "Recipes", function(_, ok) if ok then useSharedRecipes(D) end end)
