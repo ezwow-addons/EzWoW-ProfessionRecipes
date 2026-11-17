@@ -716,15 +716,11 @@ function RecipeBrowserWindow.createRecipeFlatButton(parent, w, h, isAccent, onCl
     return b
 end
 
+-- true when the search ran: the map search is EzWoW - Map Finder's (without
+-- it the World Map is not opened at all; the callers fall back)
 function RecipeBrowserWindow.launchInMapFinder(query)
-    if not query or query == "" then return end
-    if not (SlashCmdList and SlashCmdList.EZWOWMAPFINDER) then
-        local loader = (C_AddOns and C_AddOns.LoadAddOn) or LoadAddOn
-        if loader then
-            pcall(loader, "EzWoW-MapFinder")
-            pcall(loader, "EzWoW_MapFinder")
-        end
-    end
+    if not query or query == "" then return false end
+    if not (SlashCmdList and type(SlashCmdList.EZWOWMAPFINDER) == "function") then return false end
     -- with the gamepad on, a map opened by addon code taints the gamepad
     -- navigation (Libs/EzWoWGamePad): the search only runs on an open map
     local padOn = ns.GamePad and ns.GamePad.IsActive()
@@ -735,9 +731,8 @@ function RecipeBrowserWindow.launchInMapFinder(query)
         and not (InCombatLockdown and InCombatLockdown()) then
         pcall(C_Map.OpenWorldMap)
     end
-    if SlashCmdList and SlashCmdList.EZWOWMAPFINDER then
-        SlashCmdList.EZWOWMAPFINDER(query)
-    end
+    SlashCmdList.EZWOWMAPFINDER(query)
+    return true
 end
 
 function RecipeBrowserWindow.extractRecipeMapQuery(r)
@@ -784,10 +779,6 @@ local mapItemSet
 function RecipeBrowserWindow.mapHasItem(itemID)
     if not itemID or itemID <= 0 then return false end
     if not mapItemSet then
-        if not _G.EzWoWMapFinderData then
-            local loader = (C_AddOns and C_AddOns.LoadAddOn) or LoadAddOn
-            if loader then pcall(loader, "EzWoW-MapFinder") end
-        end
         local data = _G.EzWoWMapFinderData
         if type(data) ~= "table" then return false end
         mapItemSet = {}
@@ -851,11 +842,9 @@ end
 function RecipeBrowserWindow.findRecipeOnMap(r)
     if not r then return end
     local query = RecipeBrowserWindow.extractRecipeMapQuery(r)
-    if query and query ~= "" then
-        RecipeBrowserWindow.launchInMapFinder(query)
-        return
-    end
-    -- nothing to search for: a spot written in the source text still gives a waypoint
+    if query and query ~= "" and RecipeBrowserWindow.launchInMapFinder(query) then return end
+    -- nothing to search for, or no EzWoW - Map Finder to search with: a spot
+    -- written in the source text still gives a waypoint
     if RecipeBrowserWindow.waypointFromSource(resolveRecipeSrc(r)) then return end
     local src = (resolveRecipeSrc(r) or ""):gsub("\n", " / ")
     if src == "" then src = "?" end
@@ -1145,6 +1134,9 @@ function RecipeBrowserWindow.buildProfessionBrowserWindow()
         GameTooltip:SetText(L.findOnMap, unpack(Theme.accent))
         if L.findOnMapTip then
             GameTooltip:AddLine(L.findOnMapTip, 0.929, 0.957, 0.969, true)
+        end
+        if not (SlashCmdList and type(SlashCmdList.EZWOWMAPFINDER) == "function") and L.findOnMapNoMF then
+            GameTooltip:AddLine(L.findOnMapNoMF, 1, 0.82, 0, true)
         end
         GameTooltip:Show()
     end)
