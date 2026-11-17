@@ -1352,9 +1352,13 @@ function RecipeBrowserWindow.resolveHostFrame()
 end
 
 function RecipeBrowserWindow.buildTab(findSequenceMatchIndex, hostFrame)
-    local isCallOk, tabWidget = pcall(CreateFrame, "Frame", nil, hostFrame, "QuestLogTabButtonTemplate")
+    -- with the gamepad UI on, made without a parent and put in afterwards: a frame made
+    -- inside the open profession window breaks the game's gamepad navigation (Libs/EzWoWGamePad)
+    local pad = ns.GamePad
+    local make = (pad and pad.MakeFrame and pad.IsActive and pad.IsActive() and pad.MakeFrame) or CreateFrame
+    local isCallOk, tabWidget = pcall(make, "Frame", nil, hostFrame, "QuestLogTabButtonTemplate")
     if not isCallOk or not tabWidget then
-        tabWidget = CreateFrame("Button", nil, hostFrame)
+        tabWidget = make("Button", nil, hostFrame)
         tabWidget:SetSize(36, 36)
         local backdropTex = tabWidget:CreateTexture(nil, "BACKGROUND")
         backdropTex:SetPoint("TOPLEFT", -4, 4)
