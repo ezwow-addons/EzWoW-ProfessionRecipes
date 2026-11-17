@@ -3,6 +3,14 @@
 -- UI/RecipeBrowser.lua : Split-Pane Profession Recipe Browser, Side Tabs & Reagent Tooltips
 --===========================================================================
 local ADDON, ns = ...
+-- every EzWoW line on the game's tooltips can be turned off at once (Game Menu >
+-- Options > AddOns > EzWoW - Data Sharing; Libs/EzWoWShare TooltipLinesOn)
+local function ezTipsOn()
+    local share = _G.EzWoW_Share
+    if type(share) ~= "table" or type(share.TooltipLinesOn) ~= "function" then return true end
+    local ok, on = pcall(share.TooltipLinesOn)
+    return not ok or on ~= false
+end
 
 local RecipeBrowserWindow = ns.RecipeBrowserWindow or {}
 ns.RecipeBrowserWindow = RecipeBrowserWindow
@@ -1768,6 +1776,7 @@ function RecipeBrowserWindow.appendReagentUsageLines(tooltip, itemID)
 end
 
 function RecipeBrowserWindow.onItemTooltip(tooltip, payloadData2)
+    if not ezTipsOn() then return end
     
     pcall(function()
         if tooltip ~= GameTooltip and tooltip ~= ItemRefTooltip then return end

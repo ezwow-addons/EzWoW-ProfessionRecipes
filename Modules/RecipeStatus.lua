@@ -7,6 +7,14 @@
 -- already know the recipe. Learned recipes are saved per character whenever a
 -- profession window of your own is read.
 local ADDON, ns = ...
+-- every EzWoW line on the game's tooltips can be turned off at once (Game Menu >
+-- Options > AddOns > EzWoW - Data Sharing; Libs/EzWoWShare TooltipLinesOn)
+local function ezTipsOn()
+    local share = _G.EzWoW_Share
+    if type(share) ~= "table" or type(share.TooltipLinesOn) ~= "function" then return true end
+    local ok, on = pcall(share.TooltipLinesOn)
+    return not ok or on ~= false
+end
 local type, pairs, ipairs, tonumber, tostring, pcall = type, pairs, ipairs, tonumber, tostring, pcall
 
 local RecipeStatus = ns.RecipeStatus or {}
@@ -297,6 +305,7 @@ end
 local shownItem = setmetatable({}, { __mode = "k" })
 
 function RecipeStatus.onItemTooltip(tooltip, data)
+    if not ezTipsOn() then return end
     pcall(function()
         if tooltip ~= GameTooltip and tooltip ~= ItemRefTooltip then return end
         if tooltip.IsForbidden and tooltip:IsForbidden() then return end

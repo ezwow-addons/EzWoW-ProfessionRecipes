@@ -144,6 +144,8 @@ local optionsCanvas
 
 function SettingsDialog.buildSettings()
     local windowFrame = CreateFrame("Frame", "EzWoWProfessionRecipesSettings", UIParent, "BackdropTemplate")
+    -- (taller than the screen: shrunk to fit, Libs/EzWoWGamePad)
+    if ns.GamePad and ns.GamePad.KeepOnScreen then ns.GamePad.KeepOnScreen(windowFrame) end
     ns.UIKit:ApplyBackdrop(windowFrame, 1, 1)
     windowFrame:SetBackdropColor(unpack(Theme.bg))
     windowFrame:SetBackdropBorderColor(unpack(Theme.border))
