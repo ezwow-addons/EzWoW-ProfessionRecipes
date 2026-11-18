@@ -1,7 +1,9 @@
-# v2.0.25
+# v2.0.26
 
 ### 한국어
-- EzWoW - Map Finder가 없을 때 "지도에서 찾기"가 빈 세계 지도를 열지 않고, 획득처에 적힌 좌표로 추적 핀을 찍거나 채팅에 획득처를 보여 줍니다.
+- 추적 화살표 창을 끌 수 있습니다: 게임 설정 > 애드온 > EzWoW - Data Sharing (또는 /ezshare)에서 "화면의 추적 화살표 창"을 끄면 화살표 창만 숨기고 지도의 핀은 그대로 둡니다.
+- 추적 화살표 창 아래에 나오던 애드온 이름을 뺐습니다.
 
 ### English
-- Without EzWoW - Map Finder, "Find on Map" no longer opens an empty World Map: it sets a waypoint to the spot written in the source, or shows the source in chat.
+- The arrow window can now be turned off: uncheck "Arrow window on screen" in Options > AddOns > EzWoW - Data Sharing (or /ezshare). Only the window is hidden; the pin on the map stays.
+- The arrow window no longer shows the name of the addon that set the pin.
