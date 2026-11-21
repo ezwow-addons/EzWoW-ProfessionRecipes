@@ -1379,6 +1379,8 @@ function RecipeBrowserWindow.buildTab(findSequenceMatchIndex, hostFrame)
     local function onClick(self)
         if self.skillLine == -1 then
             ns.ToggleSettings()
+        elseif self.skillLine == -2 then
+            if ns.ToggleLeveling then ns.ToggleLeveling() end
         elseif self.skillLine == 0 then
             if panelFrameEntry and panelFrameEntry:IsShown() and learnedMode then panelFrameEntry:Hide() else ns.OpenCurrent() end
         elseif panelFrameEntry and panelFrameEntry:IsShown() and currentProf == self.skillLine and not learnedMode then
@@ -1403,6 +1405,8 @@ function RecipeBrowserWindow.buildTab(findSequenceMatchIndex, hostFrame)
         local tipText
         if self.skillLine == -1 then
             tipText = L.settingsTip
+        elseif self.skillLine == -2 then
+            tipText = ns.LevelingText and ns.LevelingText("tabTip")
         elseif self.skillLine == 0 then
             tipText = L.currentTip
         else
@@ -1507,6 +1511,7 @@ function ns.UpdateTabChecks()
     for _, tabWidget in ipairs(buildJournalTabButtons) do
         local onVal
         if tabWidget.skillLine == -1 then onVal = ns.settingsFrame and ns.settingsFrame:IsShown()
+        elseif tabWidget.skillLine == -2 then onVal = ns.LevelingPanel and ns.LevelingPanel.IsShown()
         elseif tabWidget.skillLine == 0 then onVal = shown and learnedMode else onVal = shown and not learnedMode and currentProf == tabWidget.skillLine end
         if tabWidget.SetChecked then tabWidget:SetChecked(onVal and true or false) end
     end
@@ -1519,6 +1524,17 @@ function RecipeBrowserWindow.bindNativeTab(resolvedValue)
     pcall(resolvedValue.HookScript, resolvedValue, "OnMouseDown", hide)
     pcall(resolvedValue.HookScript, resolvedValue, "OnMouseUp", hide)
     pcall(resolvedValue.HookScript, resolvedValue, "OnClick", hide)
+end
+
+-- every tab around the profession window (ours and the game's), for windows docked beside it
+function RecipeBrowserWindow.sideTabs()
+    local list = {}
+    for _, tabWidget in ipairs(buildJournalTabButtons) do list[#list + 1] = tabWidget end
+    for _, tabWidget in ipairs(RecipeBrowserWindow.resolveNativeTabs()) do list[#list + 1] = tabWidget end
+    if ProfessionsFrameTabSideBar and ProfessionsFrameTabSideBar.Tabs then
+        for _, tabWidget in pairs(ProfessionsFrameTabSideBar.Tabs) do list[#list + 1] = tabWidget end
+    end
+    return list
 end
 
 function RecipeBrowserWindow.resolveLowestExistingTab()
@@ -1553,7 +1569,8 @@ function RecipeBrowserWindow.positionProfessionSideTabs()
 
     local learned = scanLearnedProfessionIDs()
     
-    local wanted = { { id = 0, icon = "Interface\\Icons\\INV_Scroll_03" } }
+    -- the recipes of the open profession, then leveling it (UI/LevelingPanel.lua)
+    local wanted = { { id = 0, icon = "Interface\\Icons\\INV_Scroll_03" }, { id = -2, icon = "Interface\\Icons\\Spell_ChargePositive" } }
     for _, anchorTarget in ipairs(PROFESSIONS) do
         if not learned[anchorTarget.id] and ns.Data[anchorTarget.id] then wanted[#wanted + 1] = anchorTarget end
     end
@@ -1575,6 +1592,14 @@ function RecipeBrowserWindow.positionProfessionSideTabs()
         perCol = math.max(1, math.floor((topTab:GetTop() - frameBottom) / step))
     end
     local useSideColumn = anchor and topTab and #wanted > below
+    -- on the left every tab goes in one column: the tabs get smaller when they would
+    -- not fit the window's height (a second column covered the game's own side tabs)
+    local leftScale = 1
+    if ns.DB.tabPos == "left" then
+        local room = (hostFrame:GetHeight() or 600) - 80
+        local need = #wanted * step
+        if need > room and need > 0 then leftScale = math.max(0.55, room / need) end
+    end
 
     for index, anchorTarget in ipairs(wanted) do
         local tabWidget = buildJournalTabButtons[index] or RecipeBrowserWindow.buildTab(index, hostFrame)
@@ -1588,13 +1613,15 @@ function RecipeBrowserWindow.positionProfessionSideTabs()
             tabWidget.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
         end
         tabWidget:ClearAllPoints()
+        tabWidget:SetScale(ns.DB.tabPos == "left" and leftScale or 1)
         local w = (anchor and anchor:GetWidth()) or tabWidget:GetWidth() or 40
         if ns.DB.tabPos == "left" then
-            
-            local perLeft = math.max(1, math.floor(((hostFrame:GetHeight() or 600) - 80) / step))
+            local s = leftScale
+            local perLeft = math.max(1, math.floor(((hostFrame:GetHeight() or 600) - 80) / (step * s)))
             local columnIndex = math.floor((index - 1) / perLeft)
             local rowWidget = (index - 1) % perLeft
-            tabWidget:SetPoint("TOPRIGHT", hostFrame, "TOPLEFT", 2 - columnIndex * (w + 2), -70 - rowWidget * step)
+            -- offsets are in the tab's own (scaled) units
+            tabWidget:SetPoint("TOPRIGHT", hostFrame, "TOPLEFT", (2 - columnIndex * (w * s + 2)) / s, (-70 - rowWidget * step * s) / s)
         elseif ns.DB.tabPos == "bottom" then
 
             tabWidget:SetPoint("TOPLEFT", hostFrame, "BOTTOMLEFT", 70 + (index - 1) * (w + 4), 2)
@@ -1631,6 +1658,7 @@ function RecipeBrowserWindow.onProfessionsFrameReady()
             end)
             hostFrame:HookScript("OnHide", function()
                 if panelFrameEntry and panelFrameEntry.attached then panelFrameEntry:Hide() end
+                if ns.LevelingPanel and ns.LevelingPanel.OnHostHidden then ns.LevelingPanel.OnHostHidden() end
                 -- another profession window may still be open: move the tabs there
                 C_Timer.After(0, RecipeBrowserWindow.positionProfessionSideTabs)
             end)
@@ -1681,8 +1709,11 @@ eventFrame:SetScript("OnEvent", function(_, event, arg1)
         RecipeBrowserWindow.onProfessionsFrameReady()
         if panelFrameEntry and panelFrameEntry.attached then panelFrameEntry:Hide() end
         C_Timer.After(0.1, RecipeBrowserWindow.positionProfessionSideTabs)
+        if ns.LevelingPanel and ns.LevelingPanel.OnHostShown then ns.LevelingPanel.OnHostShown() end
     elseif event == "TRADE_SKILL_DATA_SOURCE_CHANGED" then
         if panelFrameEntry and panelFrameEntry.attached then panelFrameEntry:Hide() end
+        -- another profession in the same window: the leveling window follows it
+        if ns.LevelingPanel and ns.LevelingPanel.OnHostShown then ns.LevelingPanel.OnHostShown() end
     elseif event == "GLOBAL_MOUSE_DOWN" then
         
         if panelFrameEntry and panelFrameEntry:IsShown() and panelFrameEntry.attached then

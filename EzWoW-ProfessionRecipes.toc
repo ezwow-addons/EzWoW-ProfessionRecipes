@@ -32,6 +32,7 @@ Libs\EzWoWGamePad\GamePad.lua
 Libs\EzWoWShare\Share.lua
 Libs\EzWoWWaypointArrow\WaypointArrow.lua
 Data\RecipeData.lua
+Data\VendorPrices.lua
 Core\Init.lua
 Core\UIKit.lua
 Core\Locales.lua
@@ -39,5 +40,7 @@ Modules\RecipeIndex.lua
 Modules\QuickAction.lua
 UI\RecipeBrowser.lua
 Modules\RecipeStatus.lua
+Modules\Leveling.lua
+UI\LevelingPanel.lua
 UI\LanguageDropdown.lua
 UI\OptionsWindow.lua

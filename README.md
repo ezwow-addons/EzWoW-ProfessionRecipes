@@ -48,6 +48,16 @@ WoW Forever (`Interface: 16001`) · `/ezpr`
 
 툴팁에 이 애드온이 줄을 추가하면 그 아래 오른쪽에 `EzWoW - Profession Recipes`가 작은 회색 글씨로 한 번만 표시됩니다.
 
+#### 전문 기술 올리기 (`/ezpr level`)
+
+전문 기술 창 옆의 **올리기 탭**(초록 + 아이콘)을 누르면 창 오른쪽에 붙습니다.
+
+- **목표까지 경로**: 지금 숙련도에서 목표(기본은 최고 숙련도 300, `-`·`+`로 5씩, Shift는 25씩)까지 구간마다 무엇을 몇 개 만들지 보여 줍니다. 숙련도마다 **재료비 ÷ 오를 확률**이 가장 낮은 제조법을 고르고(주황은 반드시, 노랑부터는 회색에 가까울수록 확률이 낮아짐), 75·150·225에서 다음 단계를 배울 때를 알려 줍니다. 상급자에게 배울 수 있는 제조법도 넣을지 고를 수 있고(`배우기` 표시), 상급자 제조법으로는 오르지 않는 구간은 상점·드롭 도안으로 채웁니다(`도안 구하기` 표시).
+- **단계마다 자세히**: 위쪽 막대에 지금 숙련도 · 배운 단계 상한 · 목표가, 요약 줄에 예상 제작 횟수 · 경매장/상점 비용 · 보유 재료로 아낀 금액이 나옵니다. 단계 아래 줄에는 한 번에 드는 재료, 노랑·초록으로 바뀌는 숙련도, 지금 가방 재료로 만들 수 있는 횟수, 오를 확률(시작 → 끝)이 나옵니다. 툴팁에는 이 단계 재료 합계와 보유량, 배우는 곳(게임에서 확인한 상급자 포함)이 나오고, 오른쪽 클릭하면 배우는 곳을 지도에서 찾습니다.
+- **장보기 목록**: 경로 전체에 필요한 재료 합계에서 가방·은행에 있는 것을 빼고, `직접 만들기 · 경매장에서 사기 · 상점에서 사기 · 시세 없음 · 가방·은행에 충분함`으로 나눠 살 개수 · 개당 가격 · 소계를 보여 줍니다. 툴팁에는 쓰이는 단계, 시세를 읽은 시각, 파는 상인(게임에서 확인)이 나옵니다. 두루마리처럼 같은 전문 기술로 만드는 편이 싼 재료는 `만들기`로 나오고, 앞 단계에서 만든 것은 뒤 단계에 먼저 씁니다.
+- **경매장 시세**: 경매장을 열 때 모은 최저 즉시 구매가로 계산합니다(EzWoW - Tooltip이나 EzWoW - Bags가 있으면 그 시세를 쓰고, 없으면 이 애드온이 직접 읽음). 상점에서 파는 재료는 상점가가 더 싸면 상점가로 셉니다.
+- **전문 기술 창 연동**: 단계를 누르거나 맨 아래 **다음** 버튼을 누르면 전문 기술 창에서 그 제조법을 고르고 만들 개수를 채웁니다. 숙련도가 오르거나 가방이 바뀌면 바로 다시 계산합니다.
+
 #### 원클릭 아이템 실행 (기본 `Alt`)
 
 가방 아이템 위에서 보조키를 누른 채 **좌클릭**하면 바로 실행합니다.
@@ -78,6 +88,7 @@ WoW Forever (`Interface: 16001`) · `/ezpr`
 | 명령어 | 설명 |
 |---|---|
 | `/ezpr` | 단독 제조법 창 열기/닫기 |
+| `/ezpr level` (`올리기`) | 전문 기술 올리기 창 열기/닫기 |
 | `/ezpr config` (`settings`, `설정`) | 설정창 |
 | `/ezpr side` · `bottom` · `left` | 탭 부착 위치 오른쪽 · 아래 · 왼쪽 |
 | `/ezpr icon 16~48` | 탭 아이콘 크기 |
@@ -88,7 +99,7 @@ WoW Forever (`Interface: 16001`) · `/ezpr`
 
 ### 저장 데이터
 
-- `EzWoW_ProfessionRecipesDB`: 설정, 필터, 접힌 분류, 단독 창 위치, 캐릭터별 배운 제조법(제조법 아이템 툴팁용).
+- `EzWoW_ProfessionRecipesDB`: 설정, 필터, 접힌 분류, 단독 창 위치, 캐릭터별 배운 제조법(제조법 아이템 툴팁용), 올리기 목표 숙련도, 이 애드온이 직접 읽은 경매장 시세(EzWoW - Tooltip이 없을 때만).
 
 ### 다른 EzWoW 애드온과 함께 쓰기
 
@@ -145,6 +156,16 @@ Professions: Alchemy · Blacksmithing · Enchanting · Engineering · Leatherwor
 
 When this addon adds lines to a tooltip, `EzWoW - Profession Recipes` appears once below them on the right in small grey text.
 
+#### Level up (`/ezpr level`)
+
+The **Level up tab** (green + icon) beside the profession window opens a window on its right.
+
+- **Path to a target**: from your skill to the target (by default the highest skill, 300; `-`/`+` by 5, Shift by 25), what to make and how many in each range. At each skill it takes the recipe with the lowest **material cost ÷ chance of a skill-up** (orange always, from yellow on the chance falls towards grey) and marks where to train the next rank (75, 150, 225). Recipes a trainer teaches can be included (`learn` tag); ranges no trainer recipe covers are filled with vendor or drop recipes (`get recipe` tag).
+- **Step details**: a bar with your skill, training cap and target, and a summary (about how many crafts, auction / vendor cost, what your bags save). Under each step: the materials of one craft, where it turns yellow / green, how many your bags allow now and the skill-up chance (start → end). The tooltip lists the step's materials with what you have and where to learn it (trainers seen in the game too); right-click finds that on the map.
+- **Shopping list**: the materials for the whole path, less what your bags and bank hold, grouped as `Make · Buy at the auction house · Buy from vendors · No price · Enough in bags and bank` with the count, price each and subtotals. The tooltip shows the steps that use it, when the price was read and the vendors seen selling it. Materials the same profession makes for less (bolts of cloth) show as `make`, and what an earlier step made is used first.
+- **Auction prices**: the lowest buyout read when the auction house is open (EzWoW - Tooltip's or EzWoW - Bags' prices when installed, otherwise this addon reads them). Vendor materials count at the vendor price when that is lower.
+- **Profession window**: clicking a step, or the **Next** button at the bottom, picks the recipe in the profession window and fills in the count. It recalculates as your skill rises or your bags change.
+
 #### One-click item actions (default `Alt`)
 
 Hold the modifier and **left-click** a bag item:
@@ -175,6 +196,7 @@ Filter defaults: Hide learned on, Hide other faction's recipes on, the rest off.
 | Command | Description |
 |---|---|
 | `/ezpr` | Open/close the standalone recipe window |
+| `/ezpr level` | Open/close the Level up window |
 | `/ezpr config` (`settings`) | Settings |
 | `/ezpr side` · `bottom` · `left` | Attach tabs right · bottom · left |
 | `/ezpr icon 16-48` | Tab icon size |
@@ -185,7 +207,7 @@ Filter defaults: Hide learned on, Hide other faction's recipes on, the rest off.
 
 ### Saved data
 
-- `EzWoW_ProfessionRecipesDB`: settings, filters, collapsed categories, standalone window position, learned recipes per character (for recipe item tooltips).
+- `EzWoW_ProfessionRecipesDB`: settings, filters, collapsed categories, standalone window position, learned recipes per character (for recipe item tooltips), Level up targets, auction prices this addon read itself (only without EzWoW - Tooltip).
 
 ### Working with other EzWoW addons
 

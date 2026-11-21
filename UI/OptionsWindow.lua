@@ -487,6 +487,9 @@ SlashCmdList.EZWOWPROFESSIONRECIPES = function(msg)
         local matchRef = (msg == "side" and L.posSide) or (msg == "left" and L.posLeft) or L.posBottom
         print("|cffeba86aEzWoW - Profession Recipes|r: " .. matchRef)
         return
+    elseif msg == "level" or msg == "lvl" or msg == "올리기" then
+        if ns.ToggleLeveling then ns.ToggleLeveling() end
+        return
     elseif msg == "config" or msg == "settings" or msg == "설정" then
         ns.ToggleSettings()
         return

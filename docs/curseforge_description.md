@@ -22,6 +22,11 @@ A recipe book for WoW Forever: **12 professions and all their recipes** (camping
 - Required skill in difficulty colours; details with skill steps, amount made, where to learn (trainers, vendors per faction with coordinates and reputation, drops, quests) and reagents, plus recipe shops and drops EzWoW users saw in the game.
 - Find vendors, trainers and quests on the map with EzWoW - Map Finder (button or right-click). With coordinates you get a waypoint and a direction arrow with the seller's name; recipes with no place get their source in chat.
 
+### Level up (new)
+- A **Level up** tab beside the profession window: what to make, and how many, from your skill to a target, picking at each skill the recipe with the lowest material cost per skill point, with where to train the next rank.
+- One **shopping list** for the whole path at **auction house prices** (vendor price when lower), less what your bags and bank hold; bolts and other materials the profession makes for less are made instead.
+- Click a step or **Next** to pick the recipe in the profession window with the count filled in.
+
 ### Tooltips
 - **Reagents**: how many recipes use the item, per profession; hold Shift for the recipe names.
 - **Recipe items**: Learned / Can learn (requires skill N) / Skill too low, plus your other characters who already know it, shown as first name and surname in class colour.
@@ -45,6 +50,7 @@ A recipe book for WoW Forever: **12 professions and all their recipes** (camping
 
 ## Commands
 - `/ezpr` (`/apr`, `/제조법`, `/전문기술`) — open the recipe window
+- `/ezpr level` — Level up window
 - `/ezpr config` — settings
 - `/ezpr left|bottom|side` — tab position
 - `/ezpr quick alt|ctrl|shift|off` — one-click action key
@@ -73,6 +79,11 @@ WoW Forever용 제조법 도감입니다. **12개 전문 기술의 모든 제조
 - 필요 숙련도를 난이도 색으로 표시하고, 숙련 단계 · 제작 수량 · 배우는 곳(전문가, 진영별 상인과 좌표 · 평판, 드랍, 퀘스트) · 재료를 자세히 보여 줍니다. EzWoW 사용자가 게임에서 확인한 도안 상점 · 드롭도 함께 나옵니다.
 - EzWoW - Map Finder로 상인 · 전문가 · 퀘스트 위치를 지도에서 찾습니다(단추 또는 우클릭). 좌표가 있으면 웨이포인트와 방향 화살표(판매자 이름 표시)가 나오고, 위치가 없는 제조법은 채팅창에 획득처를 알려 줍니다.
 
+### 전문 기술 올리기 (새 기능)
+- 전문 기술 창 옆 **올리기** 탭: 지금 숙련도에서 목표까지 무엇을 몇 개 만들지, 숙련도마다 한 점 올리는 재료비가 가장 싼 제조법으로 보여 주고 다음 단계를 배울 때도 알려 줍니다.
+- 경로 전체의 **장보기 목록**을 **경매장 시세**(상점가가 더 싸면 상점가)로 계산하고, 가방 · 은행에 있는 것은 뺍니다. 두루마리처럼 직접 만드는 편이 싼 재료는 만들기로 나옵니다.
+- 단계나 **다음** 버튼을 누르면 전문 기술 창에서 그 제조법을 고르고 만들 개수를 채웁니다.
+
 ### 툴팁
 - **재료**: 그 재료를 쓰는 제조법 수를 전문 기술별로 표시하고, Shift를 누르면 제조법 이름 목록.
 - **제조법 아이템**: 배움 / 배울 수 있음(숙련 N 필요) / 숙련 부족과, 이미 배운 내 다른 캐릭터를 "이름 성"(직업 색)으로 표시.
@@ -96,6 +107,7 @@ WoW Forever용 제조법 도감입니다. **12개 전문 기술의 모든 제조
 
 ## 명령어
 - `/ezpr` (`/apr`, `/제조법`, `/전문기술`) — 제조법 창 열기
+- `/ezpr level` (`올리기`) — 전문 기술 올리기 창
 - `/ezpr config` (`설정`) — 설정창
 - `/ezpr left|bottom|side` — 탭 부착 위치
 - `/ezpr quick alt|ctrl|shift|off` — 빠른 실행 키
