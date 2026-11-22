@@ -387,6 +387,9 @@ function Leveling.UsableFn(learned, includeTrainer, includeOther)
         end
         local taught = hasFlag(r[R_FLAGS], F_TRAINER)
         if includeTrainer and taught then return "trainer" end
+        -- a recipe with no known way to learn it is no step of a plan (UI/RecipeBrowser availability)
+        local avail = ns.RecipeAvailability and ns.RecipeAvailability(r)
+        if avail then return nil end
         if includeOther and not taught then return "other" end
         return nil
     end
@@ -420,10 +423,21 @@ end
 -----------------------------------------------------------------------------
 -- Prices
 -----------------------------------------------------------------------------
+-- the same market key as EzWoW - Bags (server name, also when the game gives it empty)
 local function marketKey()
-    local realm = GetRealmName and GetRealmName() or "?"
+    local realm = ns.RecipeStatus and ns.RecipeStatus.realmName and ns.RecipeStatus.realmName()
+    if type(realm) ~= "string" then realm = GetRealmName and GetRealmName() or "?" end
     local faction = UnitFactionGroup and UnitFactionGroup("player") or "Unknown"
-    return tostring(realm) .. ":" .. tostring(faction or "Unknown")
+    local key = tostring(realm) .. ":" .. tostring(faction or "Unknown")
+    -- prices this addon saved while the server name was empty
+    local own = ns.DB and type(ns.DB.ahPrices) == "table" and ns.DB.ahPrices
+    local emptyKey = ":" .. tostring(faction or "Unknown")
+    if own and realm ~= "" and type(own[emptyKey]) == "table" then
+        local old, new = own[key], own[emptyKey]
+        if type(old) ~= "table" or (tonumber(new.t) or 0) >= (tonumber(old.t) or 0) then own[key] = new end
+        own[emptyKey] = nil
+    end
+    return key
 end
 
 local function addonLoaded(name)

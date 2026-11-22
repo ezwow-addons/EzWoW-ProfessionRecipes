@@ -209,6 +209,9 @@ function RecipeBrowserWindow.getRecipeSearchBlob(r)
 end
 
 function RecipeBrowserWindow.doesRecipeMatchFilter(r, query)
+    if RecipeBrowserWindow.isUnreleased(r) then return false end
+    -- (the shared-record lookup runs only when the option asks for it)
+    if ns.DB.hideUnknownSource and RecipeBrowserWindow.availability(r) == "unknown" then return false end
     if ns.DB.onlyNew and not containsFlag(r, F_NEW) then return false end
     if ns.DB.cap and r[R_ORANGE] > 225 then return false end
     if ns.DB.hideOtherFaction and hasOtherFaction(r) then return false end
@@ -329,6 +332,7 @@ function RecipeBrowserWindow.renderVisibleRecipeRows()
                 rowWidget.text:SetPoint("LEFT", 24, 0)
                 local name = resolveRecipeName(r)
                 if containsFlag(r, F_NEW) then name = name .. " |cff4bc8e8*|r" end
+                if RecipeBrowserWindow.availability(r) == "unknown" then name = name .. " |cff7d8a93" .. L.unknownMark .. "|r" end
                 if learnedMode then
                     if RecipeBrowserWindow.hasLearned(r) then name = "|cff63727b" .. name .. " " .. L.learnedMark .. "|r" end
                     rowWidget.right:SetText(RecipeBrowserWindow.resolveDifficultyColor(r) .. r[R_ORANGE] .. "|r")
@@ -517,6 +521,52 @@ function RecipeBrowserWindow.trainerSourceText(r, nameOf)
     return "|cff4bc8e8" .. L.seenTrainer .. ":|r " .. text
 end
 
+-- How sure the list is that a recipe can be had in this game (2026-11-22, user: "many look like they are not in
+-- the game"). Every recipe is in the client's profession table, but for some no way to learn it is known:
+--   "unreleased"  its name was never put in Korean (left as the English one): not listed at all
+--   "unknown"     no trainer, no source text, no character of this account knows it, and no shared record
+--                 (trainer / shop / drop seen by EzWoW users) shows where to get it: tagged, can be hidden
+--   nil           a way to learn it is known
+local availCache, availAt, knownAny, knownAt = {}, 0, nil, 0
+local function knownByAnyCharacter(spell)
+    local now = GetTime and GetTime() or 0
+    if not knownAny or now - knownAt > 60 then
+        knownAny, knownAt = {}, now
+        local db = ns.DB and ns.DB.known
+        for _, rec in pairs(type(db) == "table" and db or {}) do
+            for _, prof in pairs(type(rec) == "table" and type(rec.profs) == "table" and rec.profs or {}) do
+                for id, on in pairs(type(prof) == "table" and type(prof.spells) == "table" and prof.spells or {}) do
+                    if on then knownAny[id] = true end
+                end
+            end
+        end
+    end
+    return knownAny[spell] == true
+end
+function RecipeBrowserWindow.isUnreleased(r)
+    local ko, en = r[R_NAME_KO], r[R_NAME_EN]
+    return type(ko) == "string" and ko ~= "" and ko == en and not ko:find("[\128-\255]")
+end
+function RecipeBrowserWindow.availability(r)
+    if not r then return nil end
+    if RecipeBrowserWindow.isUnreleased(r) then return "unreleased" end
+    if containsFlag(r, F_TRAINER) then return nil end
+    if (r[R_SRC_KO] or "") ~= "" or (r[R_SRC_EN] or "") ~= "" then return nil end
+    local now = GetTime and GetTime() or 0
+    local cached = availCache[r]
+    if cached and now - cached.at < 60 then return cached.value end
+    local value = "unknown"
+    if knownByAnyCharacter(r[R_SPELL]) or RecipeBrowserWindow.hasLearned(r) then
+        value = nil
+    else
+        local ok, seen = pcall(RecipeBrowserWindow.sharedSourceText, r)
+        if ok and seen then value = nil end
+    end
+    availCache[r] = { at = now, value = value }
+    return value
+end
+ns.RecipeAvailability = function(r) return RecipeBrowserWindow.availability(r) end
+
 -- "Taught by: ... / Sold by: ... / Drops from: ..." for a recipe, or nil
 function RecipeBrowserWindow.sharedSourceText(r)
     local share = ns.Share
@@ -588,6 +638,7 @@ function refreshDetail()
         end
     end
     if containsFlag(r, F_NEW) then sourceData = sourceData .. "   |cff4bc8e8" .. L.newTag .. "|r" end
+    if RecipeBrowserWindow.availability(r) == "unknown" then sourceData = sourceData .. "   |cff9aa7b0" .. L.unknownSource .. "|r" end
     if containsFlag(r, F_ALLIANCE) then sourceData = sourceData .. "   |cff4a8cff" .. L.allianceOnly .. "|r"
     elseif containsFlag(r, F_HORDE) then sourceData = sourceData .. "   |cffe04040" .. L.hordeOnly .. "|r" end
     constructRecipeLookupIndex()
@@ -969,11 +1020,12 @@ function RecipeBrowserWindow.buildProfessionBrowserWindow()
     local cbHide = RecipeBrowserWindow.buildCheck(menu, "hideLearned", "hideLearned")
     local cbCan = RecipeBrowserWindow.buildCheck(menu, "canLearnOnly", "canLearnOnly")
     local cbFaction = RecipeBrowserWindow.buildCheck(menu, "hideOtherFaction", "hideOtherFaction")
+    local cbUnknown = RecipeBrowserWindow.buildCheck(menu, "hideUnknownSource", "hideUnknownSource")
     windowFrame.cbHide, windowFrame.cbCan, windowFrame.cbAll, windowFrame.cbFaction = cbHide, cbCan, cbAll, cbFaction
-    windowFrame.checks = { cbNew, cbCap, cbHide, cbCan, cbAll, cbFaction }
+    windowFrame.checks = { cbNew, cbCap, cbHide, cbCan, cbAll, cbFaction, cbUnknown }
 
     function windowFrame.LayoutFilterMenu()
-        local itemEntries = { cbNew, cbCap, cbFaction }
+        local itemEntries = { cbNew, cbCap, cbFaction, cbUnknown }
         if learnedMode then
             itemEntries[#itemEntries + 1] = cbHide
             itemEntries[#itemEntries + 1] = cbCan
@@ -999,6 +1051,7 @@ function RecipeBrowserWindow.buildProfessionBrowserWindow()
         if ns.DB.onlyNew then nodeEntry = nodeEntry + 1 end
         if ns.DB.cap then nodeEntry = nodeEntry + 1 end
         if ns.DB.hideOtherFaction then nodeEntry = nodeEntry + 1 end
+        if ns.DB.hideUnknownSource then nodeEntry = nodeEntry + 1 end
         if learnedMode then
             if ns.DB.hideLearned then nodeEntry = nodeEntry + 1 end
             if ns.DB.canLearnOnly then nodeEntry = nodeEntry + 1 end

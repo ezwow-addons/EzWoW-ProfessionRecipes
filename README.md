@@ -39,7 +39,7 @@ WoW Forever (`Interface: 16001`) · `/ezpr`
 |---|---|---|
 | ① | 전문 기술 전환 바 / 탭 | 단독 창에서는 왼쪽 아이콘으로 12개 전문 기술을 오갑니다. 기본 전문 기술 창을 열면 같은 탭이 창 옆(왼쪽·아래·오른쪽 선택)에 붙고, **두루마리 아이콘 탭**은 지금 열린 전문 기술에서 **아직 배우지 않은 제조법**만 모아 보여 줍니다. |
 | ② | 검색 | 한·영 제조법 이름, 재료 이름, 배우는 지역, 주문/아이템 ID로 찾습니다. |
-| ③ | 필터 ▼ | 포에버 신규만 · 숙련 225 이하만 · 배운 것 숨기기 · 지금 배울 수 있는 것만 · 모든 전문 기술에서 검색 · 다른 진영 제조법 숨기기 |
+| ③ | 필터 ▼ | 포에버 신규만 · 숙련 225 이하만 · 배운 것 숨기기 · 지금 배울 수 있는 것만 · 모든 전문 기술에서 검색 · 다른 진영 제조법 숨기기 · 획득처 모르는 제조법 숨기기 (배우는 곳이 게임에서 확인되지 않은 제조법은 이름 뒤에 "(획득처 미확인)", 한국어 이름이 없는 미출시 제조법은 목록에 나오지 않음) |
 | ④ | 제조법 목록 | 분류별로 접고 펼칩니다. 오른쪽 숫자는 필요 숙련도이며 내 숙련 기준 색(빨강 배울 수 없음 · 주황 · 노랑 · 초록 · 회색)으로 표시됩니다. 이름 뒤 `*`는 포에버 신규 제조법입니다. |
 | ⑤ | 상세 정보 | 숙련 단계(주황/노랑/초록/회색), 제작 수량, 배우는 곳(교관, 진영별 판매 상인과 좌표 · 상인의 호의 가격, 드랍 지역, 퀘스트), 재료와 개수. EzWoW 사용자가 게임에서 확인한 교관과 도안 상점·드롭도 “교관 (게임에서 확인)”·“판매 (게임에서 확인)”·“드롭 (게임에서 확인)”으로 나옵니다. |
 | ⑥ | 지도에서 찾기 | `EzWoW - Map Finder`로 도안 판매 상인 · 전문가 · 퀘스트 · 획득처를 월드맵에서 찾습니다. 목록의 제조법이나 재료를 **우클릭**해도 같습니다. 배우는 곳에 좌표가 있으면 그 자리에 웨이포인트를 찍고 화면에 방향 화살표(판매자 이름 표시)가 뜹니다. 위치가 없는 제조법은 채팅창에 획득처를 알려 줍니다. |
@@ -147,7 +147,7 @@ Professions: Alchemy · Blacksmithing · Enchanting · Engineering · Leatherwor
 |---|---|---|
 | ① | Profession switcher / tabs | In the standalone window the icons on the left switch between the 12 professions. With the default profession window open, the same tabs attach to its side (left, bottom or right); the **scroll tab** lists only the **recipes you have not learned yet** in the open profession. |
 | ② | Search | By Korean/English recipe name, reagent name, zone, spell or item ID. |
-| ③ | Filter ▼ | Forever new only · Skill 225 or less · Hide learned · Learnable now only · Search all professions · Hide other faction's recipes |
+| ③ | Filter ▼ | Forever new only · Skill 225 or less · Hide learned · Learnable now only · Search all professions · Hide other faction's recipes · Hide recipes with no known source (recipes with no confirmed way to learn them carry "(source unknown)"; unreleased ones without a Korean name are not listed) |
 | ④ | Recipe list | Fold by category. The number is the required skill, coloured against your skill (red not yet · orange · yellow · green · grey). `*` after the name marks a Forever-new recipe. |
 | ⑤ | Details | Skill steps (orange/yellow/green/grey), quantity created, where to learn (trainer, faction vendors with coordinates and Merchant's Favor price, drop zones, quests) and reagents. Trainers, recipe shops and drops EzWoW users saw in the game show as “Taught in the game”, “Sold in the game” and “Dropped in the game”. |
 | ⑥ | Find on Map | Uses `EzWoW - Map Finder` to show recipe vendors, trainers, quests and sources on the World Map. **Right-clicking** a recipe or reagent does the same. When the place to learn has coordinates, a waypoint goes there and a direction arrow shows the seller's name; recipes with no place get their source in chat. |

@@ -31,14 +31,99 @@ local function isSecret(v) return issecretvalue and issecretvalue(v) or false en
 -----------------------------------------------------------------------------
 -- Saved data: ns.DB.known[charKey] = { class, realm, name, profs = { [skillLine] = { rank, spells = { [spellID] = true } } } }
 -----------------------------------------------------------------------------
+-- The server's name. GetRealmName() has come back empty on this server since the
+-- evening of 2026-11-21, which gave this character a second, empty record ("Name-")
+-- and put the server's name after every character in the tooltip. The name last
+-- seen for this server (the number in the player GUID), the one EzWoW - Bags keeps
+-- for this character, or the one on this character's own record is used then.
+local function plainText(value)
+    if type(value) ~= "string" or value == "" or isSecret(value) then return nil end
+    return value
+end
+local function serverOf(guid)
+    if type(guid) ~= "string" or isSecret(guid) then return nil end
+    return guid:match("^Player%-(%d+)%-")
+end
+local realmName
+function RecipeStatus.realmName()
+    local live = plainText(GetRealmName and GetRealmName())
+    local guid = UnitGUID and UnitGUID("player")
+    local id = serverOf(guid)
+    if live then
+        if id and ns.DB then
+            ns.DB.realmNames = type(ns.DB.realmNames) == "table" and ns.DB.realmNames or {}
+            ns.DB.realmNames[id] = live
+        end
+        return live
+    end
+    if realmName then return realmName end
+    local found
+    if id and ns.DB and type(ns.DB.realmNames) == "table" then found = plainText(ns.DB.realmNames[id]) end
+    local bags = type(EzWoW_BagsDB) == "table" and EzWoW_BagsDB or nil
+    if not found and id and bags and type(bags.realmNames) == "table" then found = plainText(bags.realmNames[id]) end
+    if not found and bags and type(bags.characters) == "table" and guid then
+        for _, char in pairs(bags.characters) do
+            if type(char) == "table" and char.guid == guid and plainText(char.realm) then found = char.realm; break end
+        end
+    end
+    if not found and ns.DB and type(ns.DB.known) == "table" then
+        local name = UnitName and UnitName("player")
+        for _, rec in pairs(ns.DB.known) do
+            if type(rec) == "table" and plainText(rec.realm) and ((guid and rec.guid == guid) or (not rec.guid and rec.name == name)) then
+                found = rec.realm; break
+            end
+        end
+    end
+    found = found or plainText(GetNormalizedRealmName and GetNormalizedRealmName())
+    if found then realmName = found end
+    return found or ""
+end
+
 local playerKey
 function RecipeStatus.playerKey()
     if playerKey then return playerKey end
     local name = UnitName and UnitName("player")
-    local realm = GetRealmName and GetRealmName()
     if type(name) ~= "string" or name == "" or isSecret(name) then return nil end
-    playerKey = name .. "-" .. tostring(realm or "")
+    local realm = RecipeStatus.realmName()
+    playerKey = name .. "-" .. realm
+    -- what was saved under the empty server name goes back to this record
+    local db = RecipeStatus.knownDB()
+    local empty = name .. "-"
+    if db and realm ~= "" and type(db[empty]) == "table" then
+        RecipeStatus.mergeRecord(db, empty, playerKey)
+    end
     return playerKey
+end
+
+-- Joins the record under `fromKey` into the one under `toKey`: every known recipe,
+-- the higher skill, the later check.
+function RecipeStatus.mergeRecord(db, fromKey, toKey)
+    local from = db[fromKey]
+    if type(from) ~= "table" or fromKey == toKey then return end
+    local to = db[toKey]
+    if type(to) ~= "table" then
+        db[toKey], db[fromKey] = from, nil
+        from.realm = nil
+        return
+    end
+    for field, value in pairs(from) do
+        if field ~= "profs" and field ~= "realm" and to[field] == nil then to[field] = value end
+    end
+    to.profs = type(to.profs) == "table" and to.profs or {}
+    for skillLine, prof in pairs(type(from.profs) == "table" and from.profs or {}) do
+        local mine = to.profs[skillLine]
+        if type(mine) ~= "table" then
+            to.profs[skillLine] = prof
+        elseif type(prof) == "table" then
+            mine.spells = type(mine.spells) == "table" and mine.spells or {}
+            for spellID, known in pairs(type(prof.spells) == "table" and prof.spells or {}) do
+                if known then mine.spells[spellID] = known end
+            end
+            if (tonumber(prof.rank) or 0) > (tonumber(mine.rank) or 0) then mine.rank = prof.rank end
+            if (tonumber(prof.time) or 0) > (tonumber(mine.time) or 0) then mine.time = prof.time end
+        end
+    end
+    db[fromKey] = nil
 end
 
 function RecipeStatus.knownDB()
@@ -53,7 +138,9 @@ function RecipeStatus.myRecord()
     local rec = db[key]
     if type(rec) ~= "table" then rec = {}; db[key] = rec end
     rec.name = UnitName and UnitName("player") or rec.name
-    rec.realm = GetRealmName and GetRealmName() or rec.realm
+    rec.realm = plainText(RecipeStatus.realmName()) or rec.realm
+    local guid = UnitGUID and UnitGUID("player")
+    if type(guid) == "string" and not isSecret(guid) then rec.guid = guid end
     -- second UnitName value is the surname on this client (shown, never part of the key)
     if UnitName then
         local _, surname = UnitName("player")
@@ -218,7 +305,7 @@ local function charLabel(rec, key)
         local sep = consts and consts.CHARACTERNAME_SURNAME_SEPARATOR
         label = rec.name .. ((type(sep) == "string" and sep ~= "" and not isSecret(sep)) and sep or " ") .. rec.surname
     end
-    if rec.realm and GetRealmName and rec.realm ~= GetRealmName() then label = label .. "-" .. rec.realm end
+    if plainText(rec.realm) and rec.realm ~= RecipeStatus.realmName() then label = label .. "-" .. rec.realm end
     local color = CLASS_COLORS and rec.class and CLASS_COLORS[rec.class]
     if color and color.colorStr then return "|c" .. color.colorStr .. label .. "|r" end
     return label
