@@ -1296,9 +1296,11 @@ function RecipeBrowserWindow.buildProfessionBrowserWindow()
     if left.SetClipsChildren then left:SetClipsChildren(true) end
 
     windowFrame:RegisterEvent("GET_ITEM_INFO_RECEIVED")
+    -- (C_Item.RequestLoadItemDataByID answers only with ITEM_DATA_LOAD_RESULT on this client, 2026-11-22)
+    pcall(windowFrame.RegisterEvent, windowFrame, "ITEM_DATA_LOAD_RESULT")
     windowFrame:RegisterEvent("BAG_UPDATE_DELAYED")
     windowFrame:SetScript("OnEvent", function(self, event, itemID, success)
-        if event == "GET_ITEM_INFO_RECEIVED" and not success then return end
+        if (event == "GET_ITEM_INFO_RECEIVED" or event == "ITEM_DATA_LOAD_RESULT") and not success then return end
         if not self:IsShown() then return end
         if self.pendingRefresh then return end
         self.pendingRefresh = true

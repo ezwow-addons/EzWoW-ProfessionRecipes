@@ -10,6 +10,8 @@ A recipe book for WoW Forever: **12 professions and all their recipes** (camping
 
 ![Recipe guide](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/ui_en.png)
 
+![Level up planner](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/leveling_en.png)
+
 ![Settings window](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/settings_en.png)
 
 *In-game screenshots with the addon set to English. The game client is Korean, so game text such as zone, item and spell names stays Korean. Character and player names and chat text are blurred.*
@@ -18,7 +20,8 @@ A recipe book for WoW Forever: **12 professions and all their recipes** (camping
 
 ### Recipe window
 - Alchemy, Blacksmithing, Enchanting, Engineering, Leatherworking, Tailoring, Mining (smelting), Cooking, First Aid, Herbalism, Skinning and Fishing (camp gear).
-- Search by recipe name (Korean or English), reagent, zone or ID; filters for Forever-new recipes, skill 225 or less, other faction, all professions, hide learned, learnable now.
+- Search by recipe name (Korean or English), reagent, zone or ID; filters for Forever-new recipes, skill 225 or less, other faction, all professions, hide learned, learnable now, hide recipes with no known source.
+- Recipes whose learn source is not confirmed in the game yet are marked **(source unknown)**, and the leveling planner skips them.
 - Required skill in difficulty colours; details with skill steps, amount made, where to learn (trainers, vendors per faction with coordinates and reputation, drops, quests) and reagents, plus recipe shops and drops EzWoW users saw in the game.
 - Find vendors, trainers and quests on the map with EzWoW - Map Finder (button or right-click). With coordinates you get a waypoint and a direction arrow with the seller's name; recipes with no place get their source in chat.
 
@@ -67,6 +70,8 @@ WoW Forever용 제조법 도감입니다. **12개 전문 기술의 모든 제조
 
 ![제조법 도감](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/ui_ko.png)
 
+![올리기 계획](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/leveling_ko.png)
+
 ![설정창](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/settings_ko.png)
 
 *실제 게임 화면입니다(WoW Forever, 한국어 클라이언트). 캐릭터 · 다른 플레이어 이름과 채팅 내용은 가렸습니다.*
@@ -75,7 +80,8 @@ WoW Forever용 제조법 도감입니다. **12개 전문 기술의 모든 제조
 
 ### 제조법 창
 - 연금술 · 대장기술 · 마법부여 · 기계공학 · 가죽세공 · 재봉술 · 채광(제련) · 요리 · 응급치료 · 약초 채집 · 무두질 · 낚시(야영 설비).
-- 한 · 영 제조법 이름, 재료, 지역, ID로 검색. 포에버 신규만 · 숙련 225 이하 · 다른 진영 숨기기 · 모든 전문 기술 검색 · 배운 것 숨기기 · 지금 배울 수 있는 것만 필터.
+- 한 · 영 제조법 이름, 재료, 지역, ID로 검색. 포에버 신규만 · 숙련 225 이하 · 다른 진영 숨기기 · 모든 전문 기술 검색 · 배운 것 숨기기 · 지금 배울 수 있는 것만 · 획득처 모르는 제조법 숨기기 필터.
+- 게임에서 배우는 곳이 아직 확인되지 않은 제조법은 **(획득처 미확인)**으로 표시하고, 올리기 계획에서 뺍니다.
 - 필요 숙련도를 난이도 색으로 표시하고, 숙련 단계 · 제작 수량 · 배우는 곳(전문가, 진영별 상인과 좌표 · 평판, 드랍, 퀘스트) · 재료를 자세히 보여 줍니다. EzWoW 사용자가 게임에서 확인한 도안 상점 · 드롭도 함께 나옵니다.
 - EzWoW - Map Finder로 상인 · 전문가 · 퀘스트 위치를 지도에서 찾습니다(단추 또는 우클릭). 좌표가 있으면 웨이포인트와 방향 화살표(판매자 이름 표시)가 나오고, 위치가 없는 제조법은 채팅창에 획득처를 알려 줍니다.
 

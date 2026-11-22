@@ -1232,7 +1232,7 @@ function Panel.Build()
 
     local events = {
         "TRADE_SKILL_LIST_UPDATE", "SKILL_LINES_CHANGED", "CHAT_MSG_SKILL", "BAG_UPDATE_DELAYED",
-        "GET_ITEM_INFO_RECEIVED", "LEARNED_SPELL_IN_TAB", "NEW_RECIPE_LEARNED",
+        "GET_ITEM_INFO_RECEIVED", "ITEM_DATA_LOAD_RESULT", "LEARNED_SPELL_IN_TAB", "NEW_RECIPE_LEARNED",
     }
     for _, event in ipairs(events) do pcall(frame.RegisterEvent, frame, event) end
     frame:SetScript("OnEvent", function() Panel.QueueRefresh() end)

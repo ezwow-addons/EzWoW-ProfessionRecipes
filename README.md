@@ -23,6 +23,8 @@ WoW Forever (`Interface: 16001`) · `/ezpr`
 
 ![제조법 도감](docs/images/ui_ko.png)
 
+![올리기 계획](docs/images/leveling_ko.png)
+
 ![설정창](docs/images/settings_ko.png)
 
 > 실제 게임 화면입니다(WoW Forever, 한국어 클라이언트). 캐릭터 · 다른 플레이어 이름과 채팅 내용은 가렸습니다.
@@ -130,6 +132,8 @@ Professions: Alchemy · Blacksmithing · Enchanting · Engineering · Leatherwor
 ### Screenshots
 
 ![Recipe guide](docs/images/ui_en.png)
+
+![Level up planner](docs/images/leveling_en.png)
 
 ![Settings window](docs/images/settings_en.png)
 
