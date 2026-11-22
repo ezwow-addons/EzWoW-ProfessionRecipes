@@ -1,9 +1,11 @@
-# v2.0.28
+# v2.0.29
 
 ### 한국어
-- 전문 기술 창 옆에 '올리기' 탭을 추가했습니다. 지금 숙련도에서 목표까지 무엇을 몇 개 만들지, 필요한 재료와 경매장 비용(장보기 목록)을 보여 주고, 다음 제조법을 전문 기술 창에서 바로 고를 수 있습니다(`/ezpr 올리기`).
-- 왼쪽 탭이 많아도 한 줄에 들어가도록 크기를 맞춥니다.
+- 게임에서 배우는 곳이 확인되지 않은 제조법에 "(획득처 미확인)" 표시와 숨기기 필터를 넣었습니다. 올리기 계획에서는 뺍니다.
+- 서버 이름을 읽지 못할 때 캐릭터 기록과 시세가 따로 나뉘던 문제를 수정했습니다(나뉜 기록은 합칩니다).
+- 게임의 채팅 채널 창을 열 때 "조금 천천히" 경고가 뜨던 문제를 수정했습니다.
 
 ### English
-- Added a Level up tab beside the profession window: what to make and how many from your skill to a target, with a shopping list at auction house prices and a button that picks the next recipe in the profession window (`/ezpr level`).
-- The tabs on the left now shrink to fit one column.
+- Recipes with no confirmed learn source in the game are marked "(source unknown)" and can be hidden with a filter. The leveling planner skips them.
+- Fixed character records and prices splitting when the realm name cannot be read (split records are merged).
+- Fixed a "slow down" warning when opening the game's chat channel window.
