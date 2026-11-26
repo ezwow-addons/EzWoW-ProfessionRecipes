@@ -757,9 +757,28 @@ function CraftCost.Line(item)
     return text
 end
 
+-- EzWoW - Tooltip draws the line right under its auction price (2026-11-26, user: the craft cost under
+-- the auction price); it names itself in ns.craftLinesBy when it loads.
+local function drawnElsewhere()
+    local by = ns.craftLinesBy
+    if type(by) ~= "string" then return false end
+    local fn = (C_AddOns and C_AddOns.IsAddOnLoaded) or _G.IsAddOnLoaded
+    if type(fn) ~= "function" then return false end
+    local ok, loaded = pcall(fn, by)
+    return ok and loaded and true or false
+end
+
+-- the line for EzWoW - Tooltip (nil: setting off, or nothing to show)
+function ns.CraftCostTooltipLine(tooltip, item)
+    if not (ns.DB and ns.DB.craftCostTooltip ~= false) then return nil end
+    if type(item) ~= "number" then return nil end
+    return CraftCost.Line(item)
+end
+
 -- RecipeStatus.onItemTooltip: under the setting "craftCostTooltip" (on unless turned off)
 function CraftCost.AddLine(tooltip, item)
     if not (ns.DB and ns.DB.craftCostTooltip ~= false) then return end
+    if drawnElsewhere() then return end
     local line = CraftCost.Line(item)
     if not line then return end
     tooltip:AddLine(line, 1, 1, 1)
