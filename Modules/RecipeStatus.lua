@@ -400,6 +400,9 @@ function RecipeStatus.onItemTooltip(tooltip, data)
         if not itemID or shownItem[tooltip] == itemID then return end
         shownItem[tooltip] = itemID
         RecipeStatus.addLines(tooltip, itemID, name)
+        -- what the item costs to make (Modules/Leveling.lua)
+        local craft = ns.Leveling and ns.Leveling.CraftCost
+        if craft and craft.AddLine then craft.AddLine(tooltip, itemID) end
     end)
     -- last item hook of this addon: one attribution line under everything it added
     if (tooltip == GameTooltip or tooltip == ItemRefTooltip) and ns.FlushTooltipTag then

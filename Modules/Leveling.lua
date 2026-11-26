@@ -483,9 +483,12 @@ function Prices.Vendor(item)
     return (v and v > 0) and v or nil
 end
 
--- the planner's price: the lower of auction and vendor
+-- the planner's price: the lower of auction and vendor. A reagent vendors sell only a few of at a time
+-- (they come back after hours) counts at its auction price while there is one (2026-11-26: craft costs
+-- came out far too low with Gromsblood at 10s from a herb seller and 30s at auction).
 function Prices.Unit(item)
     local ah, vendor = Prices.Auction(item), Prices.Vendor(item)
+    if vendor and ah and ns.VendorLimited and ns.VendorLimited[item] then return ah, "ah" end
     if vendor and (not ah or vendor <= ah) then return vendor, "vendor" end
     if ah then return ah, "ah" end
     return nil
@@ -633,3 +636,132 @@ events:SetScript("OnEvent", function(_, event)
         if scan.waiting then readList() end
     end
 end)
+
+
+-----------------------------------------------------------------------------
+-- Craft cost on item tooltips (2026-11-26, asked for on CurseForge: what an item costs to make at
+-- auction prices against buying it made, also on characters without the profession)
+-- For an item a recipe makes: its reagents at the planner's price (the lower of auction and vendor;
+-- a reagent with no price that is made itself counts at its own craft cost, one level down), divided
+-- by how many the recipe makes. The recipe with the fewest reagents lacking a price, then the cheapest,
+-- wins. The item -> recipes index is made when the addon loads (and again when the recipe table is
+-- replaced), never inside a tooltip.
+-----------------------------------------------------------------------------
+local CraftCost = Leveling.CraftCost or {}
+Leveling.CraftCost = CraftCost
+local productIndex                         -- item -> { recipe rows that make it }
+
+function CraftCost.BuildIndex()
+    local index = {}
+    for _, prof in pairs(type(ns.Data) == "table" and ns.Data or {}) do
+        for _, r in ipairs(type(prof) == "table" and type(prof.recipes) == "table" and prof.recipes or {}) do
+            local item = tonumber(r[R_ITEM])
+            if item and item > 0 and type(r[R_REAG]) == "table" and #r[R_REAG] > 0 then
+                local list = index[item]
+                if not list then
+                    list = {}
+                    index[item] = list
+                end
+                list[#list + 1] = r
+            end
+        end
+    end
+    productIndex = index
+    return index
+end
+pcall(CraftCost.BuildIndex)
+if ns.RecipeCatalogIndex and ns.RecipeCatalogIndex.onDataChanged then
+    ns.RecipeCatalogIndex.onDataChanged(function() pcall(CraftCost.BuildIndex) end)
+end
+
+-- the cost of one made item by one recipe, and how many reagents have no price
+local function recipeCost(r, depth, seen)
+    local total, missing = 0, 0
+    for _, rg in ipairs(r[R_REAG]) do
+        local id, n = tonumber(rg[1]), tonumber(rg[2]) or 1
+        local unit = id and Prices.Unit(id)
+        if not unit and id and depth > 0 and not seen[id] then
+            seen[id] = true
+            local made, lacking = CraftCost.Unit(id, depth - 1, seen)
+            seen[id] = nil
+            if made and lacking == 0 then unit = made end
+        end
+        if unit then total = total + unit * n else missing = missing + 1 end
+    end
+    return total / max(1, tonumber(r[R_QTY]) or 1), missing
+end
+
+-- craft cost of one item and how many reagents have no price (nil: no recipe makes it)
+function CraftCost.Unit(item, depth, seen)
+    local list = productIndex and productIndex[item]
+    if not list then return nil end
+    seen = seen or { [item] = true }
+    local best, bestMissing
+    for _, r in ipairs(list) do
+        local cost, missing = recipeCost(r, depth or 1, seen)
+        if bestMissing == nil or missing < bestMissing or (missing == bestMissing and cost < best) then
+            best, bestMissing = cost, missing
+        end
+    end
+    return best, bestMissing
+end
+
+-- coins like the other price lines of item tooltips (coloured number + coin picture); plain: the numbers
+-- keep the surrounding colour (inside the green / red difference). The game's own coin text function is
+-- not there on this client, which left "49s 97c" next to coin pictures (2026-11-26).
+local COIN_ICONS = {
+    "|TInterface\\MoneyFrame\\UI-GoldIcon:12:12:0:0|t",
+    "|TInterface\\MoneyFrame\\UI-SilverIcon:12:12:0:0|t",
+    "|TInterface\\MoneyFrame\\UI-CopperIcon:12:12:0:0|t",
+}
+local COIN_COLORS = { "|cffFFD100", "|cffE6E6E6", "|cffEDA55F" }
+local function money(copper, plain)
+    copper = floor((tonumber(copper) or 0) + 0.5)
+    if copper >= 10000 then copper = floor(copper / 100 + 0.5) * 100 end   -- copper hidden above a gold
+    local parts = {}
+    local function add(n, k)
+        local num = tostring(n)
+        if k == 1 and BreakUpLargeNumbers then
+            local ok, text = pcall(BreakUpLargeNumbers, n)
+            if ok and type(text) == "string" then num = text end
+        end
+        parts[#parts + 1] = (plain and num or (COIN_COLORS[k] .. num .. "|r")) .. " " .. COIN_ICONS[k]
+    end
+    local g, s, c = floor(copper / 10000), floor(copper / 100) % 100, copper % 100
+    if g > 0 then add(g, 1) end
+    if s > 0 then add(s, 2) end
+    if c > 0 or #parts == 0 then add(c, 3) end
+    return table.concat(parts, " ")
+end
+
+-- the tooltip line for an item (nil: no recipe makes it, or none of its reagents has a price)
+function CraftCost.Line(item)
+    local L = ns.L
+    if not (L and productIndex) then return nil end
+    local cost, missing = CraftCost.Unit(item, 1)
+    if not cost or cost <= 0 then return nil end
+    local text = "|cffA7B9C5" .. L.craftCost .. ":|r " .. money(cost)
+    if missing > 0 then
+        return text .. " |cff8398A6" .. L.craftCostMissing:format(missing) .. "|r"
+    end
+    local ah = Prices.Auction(item)
+    if ah and ah > 0 then
+        text = text .. "  |cff8398A6·|r |cffA7B9C5" .. L.craftCostAuction .. "|r " .. money(ah)
+        local diff = floor(ah - cost + 0.5)
+        if diff >= 1 then
+            text = text .. " |cff7ddc8a(" .. L.craftCheaper:format(money(diff, true)) .. ")|r"
+        elseif diff <= -1 then
+            text = text .. " |cffEA837E(" .. L.craftDearer:format(money(-diff, true)) .. ")|r"
+        end
+    end
+    return text
+end
+
+-- RecipeStatus.onItemTooltip: under the setting "craftCostTooltip" (on unless turned off)
+function CraftCost.AddLine(tooltip, item)
+    if not (ns.DB and ns.DB.craftCostTooltip ~= false) then return end
+    local line = CraftCost.Line(item)
+    if not line then return end
+    tooltip:AddLine(line, 1, 1, 1)
+    if ns.NoteTooltipLines then ns.NoteTooltipLines(tooltip) end
+end

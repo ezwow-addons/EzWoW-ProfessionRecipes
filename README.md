@@ -48,6 +48,8 @@ WoW Forever (`Interface: 16001`) · `/ezpr`
 | ⑦ | 재료 툴팁 | 가방·상점 아이템 툴팁에 그 재료가 쓰이는 제조법 수를 전문 기술별로 표시합니다. **Shift**를 누르면 제조법 이름과 숙련도 목록이 나옵니다. |
 | ⑧ | 제조법 아이템 툴팁 | 도안·제조법 아이템 툴팁에 **배움 / 배울 수 있음 (숙련 N 필요) / 숙련 부족**과, 이미 배운 **내 다른 캐릭터**(이름 성, 직업 색)를 표시합니다. 각 캐릭터로 전문 기술 창을 한 번 열면 배운 제조법이 저장됩니다. |
 
+**제작 비용 툴팁**: 제조법으로 만드는 아이템(물약·붕대·옷감 등)의 툴팁에 `제작 비용: 재료값 · 경매장 가격 (제작이 얼마 쌈/비쌈)`이 나옵니다. 재료값은 경매장 시세(상점이 더 싸면 상점 가격)로 더하고, 한 번에 여러 개 만드는 제조법은 1개 값으로 나눕니다. 시세가 없는 재료가 있으면 `이상 (시세 없는 재료 N)`이 붙습니다. 그 전문 기술이 없는 캐릭터에도 보이며, 설정 창 ④ 아래에서 끌 수 있습니다.
+
 툴팁에 이 애드온이 줄을 추가하면 그 아래 오른쪽에 `EzWoW - Profession Recipes`가 작은 회색 글씨로 한 번만 표시됩니다.
 
 #### 전문 기술 올리기 (`/ezpr level`)
@@ -82,6 +84,8 @@ WoW Forever (`Interface: 16001`) · `/ezpr`
 | ④ | 아이템 툴팁에 사용처(제조법 목록) 표시 | 재료 툴팁 | 켬 |
 | ⑤ | 가방 아이템 빠른 실행 키 | Alt / Alt + Ctrl / Alt + Shift / 끄기 | Alt |
 | ⑥ | 설정 초기화 · 후원하기 | 모든 설정을 처음으로 되돌립니다. | - |
+
+④ 아래에 **아이템 툴팁에 제작 비용 표시**(기본 켬)가 있습니다.
 
 필터 기본값: 배운 것 숨기기 켬, 다른 진영 제조법 숨기기 켬, 나머지 끔.
 
@@ -158,6 +162,8 @@ Professions: Alchemy · Blacksmithing · Enchanting · Engineering · Leatherwor
 | ⑦ | Reagent tooltip | Bag and vendor tooltips show how many recipes per profession use the item. Hold **Shift** for recipe names and skill levels. |
 | ⑧ | Recipe item tooltip | Recipe items show **Learned / Can learn (requires skill N) / Skill too low** and which of **your other characters** already know it (first name and surname, class colour). Open the profession window once on each character to save its learned recipes. |
 
+**Craft cost tooltip**: items a recipe makes (potions, bandages, cloth and more) show `Craft cost: reagents · Auction price (crafting saves / costs more)`. Reagents count at auction prices (vendor price when lower), and recipes that make several are divided per item. Reagents without a price add `or more (N reagents without a price)`. It shows on every character, with or without the profession, and can be turned off under ④ in the settings.
+
 When this addon adds lines to a tooltip, `EzWoW - Profession Recipes` appears once below them on the right in small grey text.
 
 #### Level up (`/ezpr level`)
@@ -192,6 +198,8 @@ Choose the modifier in settings: `Alt` / `Alt + Ctrl` / `Alt + Shift` / `Off`.
 | ④ | Show recipes that use an item in its tooltip | Reagent tooltip | On |
 | ⑤ | One-click item action key | Alt / Alt + Ctrl / Alt + Shift / Off | Alt |
 | ⑥ | Reset Settings · Support | Restores every setting. | - |
+
+Under ④ is **Show the craft cost in item tooltips** (on by default).
 
 Filter defaults: Hide learned on, Hide other faction's recipes on, the rest off.
 

@@ -150,7 +150,7 @@ function SettingsDialog.buildSettings()
     windowFrame:SetBackdropColor(unpack(Theme.bg))
     windowFrame:SetBackdropBorderColor(unpack(Theme.border))
     ns.settingsFrame = windowFrame
-    windowFrame:SetSize(420, 436)
+    windowFrame:SetSize(420, 462)
     windowFrame:SetPoint("CENTER")
     windowFrame:SetFrameStrata("FULLSCREEN_DIALOG")
     windowFrame:SetToplevel(true)
@@ -310,7 +310,26 @@ function SettingsDialog.buildSettings()
     end)
     tipCheck:SetScript("OnLeave", GameTooltip_Hide)
 
-    local quickLabel = createSectionDivider(-378 + LANG_ROWS_SAVED)
+    -- craft cost line on item tooltips (Modules/Leveling.lua CraftCost)
+    local costCheck = CreateFrame("CheckButton", nil, windowFrame, "UICheckButtonTemplate")
+    costCheck:SetSize(24, 24)
+    costCheck:SetPoint("TOPLEFT", 18, -368 + LANG_ROWS_SAVED)
+    local costText = costCheck.Text or costCheck.text or costCheck:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    if not (costCheck.Text or costCheck.text) then costText:SetPoint("LEFT", costCheck, "RIGHT", 4, 0) end
+    costText:SetFontObject("GameFontHighlight")
+    costText:SetTextColor(unpack(Theme.text))
+    costCheck:SetScript("OnClick", function(self) ns.DB.craftCostTooltip = self:GetChecked() and true or false end)
+    costCheck:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:SetText(L.craftCostTooltip, unpack(Theme.accent))
+        if L.craftCostTooltipDesc then
+            GameTooltip:AddLine(L.craftCostTooltipDesc, 0.929, 0.957, 0.969, true)
+        end
+        GameTooltip:Show()
+    end)
+    costCheck:SetScript("OnLeave", GameTooltip_Hide)
+
+    local quickLabel = createSectionDivider(-404 + LANG_ROWS_SAVED)
     local quick = SettingsDialog.buildRadioGroup(windowFrame, {
         { value = "ALT",   textKey = "quickAlt" },
         { value = "CTRL",  textKey = "quickCtrl" },
@@ -323,7 +342,7 @@ function SettingsDialog.buildSettings()
     for idx = 1, 4 do
         local col = (idx - 1) % 2
         local row = math.floor((idx - 1) / 2)
-        quick[idx]:SetPoint("TOPLEFT", 20 + col * 190, -402 + LANG_ROWS_SAVED - row * 26)
+        quick[idx]:SetPoint("TOPLEFT", 20 + col * 190, -428 + LANG_ROWS_SAVED - row * 26)
         if quick[idx].label then
             quick[idx].label:SetWidth(158)
             quick[idx].label:SetJustifyH("LEFT")
@@ -337,6 +356,7 @@ function SettingsDialog.buildSettings()
         ns.DB.standalonePos = nil
         ns.DB.iconSize = 30
         ns.DB.reagentTooltip = true
+        ns.DB.craftCostTooltip = true
         ns.DB.quickModifier = "ALT"
         if ns.UpdateQuickModifier then ns.UpdateQuickModifier() end
         if ns.GetBrowserMainFrame() and not ns.GetBrowserMainFrame().attached then
@@ -371,6 +391,9 @@ function SettingsDialog.buildSettings()
         tipText:SetText(L.reagentTooltip)
         ns.UIKit:FitFontString(tipText, 360, 1)
         tipCheck:SetChecked(ns.DB.reagentTooltip)
+        costText:SetText(L.craftCostTooltip)
+        ns.UIKit:FitFontString(costText, 360, 1)
+        costCheck:SetChecked(ns.DB.craftCostTooltip ~= false)
         langBox.label:SetText(langName(ns.DB.lang or "auto") .. " ▼")
         ns.UIKit:FitFontString(langBox.label, 228, 1)
         ns.LanguageDropdown.Refresh(langBox)

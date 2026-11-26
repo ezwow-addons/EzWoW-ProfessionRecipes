@@ -33,6 +33,7 @@ A recipe book for WoW Forever: **12 professions and all their recipes** (camping
 ### Tooltips
 - **Reagents**: how many recipes use the item, per profession; hold Shift for the recipe names.
 - **Recipe items**: Learned / Can learn (requires skill N) / Skill too low, plus your other characters who already know it, shown as first name and surname in class colour.
+- **Craft cost**: items a recipe makes show what their reagents cost at auction prices (vendor price when lower) next to the item's own auction price, on every character, with or without the profession.
 - The addon name is shown once, in small grey text, under the lines it adds.
 
 ### One-click item actions (default Alt)
@@ -93,6 +94,7 @@ WoW Forever용 제조법 도감입니다. **12개 전문 기술의 모든 제조
 ### 툴팁
 - **재료**: 그 재료를 쓰는 제조법 수를 전문 기술별로 표시하고, Shift를 누르면 제조법 이름 목록.
 - **제조법 아이템**: 배움 / 배울 수 있음(숙련 N 필요) / 숙련 부족과, 이미 배운 내 다른 캐릭터를 "이름 성"(직업 색)으로 표시.
+- **제작 비용**: 제조법으로 만드는 아이템에 재료를 경매장 시세(상점이 더 싸면 상점 가격)로 더한 값과 그 아이템의 경매장 가격을 함께 보여 줍니다. 전문 기술이 없는 캐릭터에도 보입니다.
 - 이 애드온이 추가한 줄 아래에 애드온 이름을 작은 회색 글씨로 한 번만 표시합니다.
 
 ### 원클릭 아이템 실행 (기본 Alt)
