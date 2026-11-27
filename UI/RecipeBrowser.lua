@@ -481,6 +481,21 @@ local function buildTrainerIndex()
             end
         end
     end
+    -- trainers only the records shipped with the addons know (shared library v22)
+    if type(share.TrainerIDs) == "function" and type(share.GetTrainerSpells) == "function" then
+        local okIDs, ids = pcall(share.TrainerIDs)
+        for _, npcID in ipairs(okIDs and type(ids) == "table" and ids or {}) do
+            if type(npcID) == "number" and type(store[npcID]) ~= "table" then
+                local ok, list = pcall(share.GetTrainerSpells, npcID)
+                for _, id in ipairs(ok and type(list) == "table" and list or {}) do
+                    if type(id) == "number" then
+                        index[id] = index[id] or {}
+                        table.insert(index[id], npcID)
+                    end
+                end
+            end
+        end
+    end
     return index
 end
 

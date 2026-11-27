@@ -21,7 +21,7 @@
 ## Notes-zhTW: 在專業視窗旁新增未學專業的分頁並列出所有配方。(/ezpr)
 ## X-License: GPL-3.0
 ## OptionalDeps: EzWoW-Data
-## Author: qqhrqqhr2
+## Author: ezwow-addons
 ## Version: 2.0.33
 ## Category: EzWoW
 ## SavedVariables: EzWoW_ProfessionRecipesDB, EzWoW_SharedData, EzWoW_ShareStore_ProfessionRecipes

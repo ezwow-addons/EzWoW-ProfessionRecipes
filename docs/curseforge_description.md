@@ -8,11 +8,11 @@ CurseForge summary (EN): A recipe book for all 12 professions with reagents, ski
 
 A recipe book for WoW Forever: **12 professions and all their recipes** (camping recipes included) with reagents, skill levels and where to learn them. It adds **tabs for professions you have not learned** and a **missing-recipes tab** to the profession window, and `/ezpr` opens it on its own even if you know no profession.
 
-![Recipe guide](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/ui_en.png)
+![Recipe guide](https://raw.githubusercontent.com/ezwow-addons/EzWoW-ProfessionRecipes/master/docs/images/ui_en.png)
 
-![Level up planner](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/leveling_en.png)
+![Level up planner](https://raw.githubusercontent.com/ezwow-addons/EzWoW-ProfessionRecipes/master/docs/images/leveling_en.png)
 
-![Settings window](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/settings_en.png)
+![Settings window](https://raw.githubusercontent.com/ezwow-addons/EzWoW-ProfessionRecipes/master/docs/images/settings_en.png)
 
 *In-game screenshots with the addon set to English. The game client is Korean, so game text such as zone, item and spell names stays Korean. Character and player names and chat text are blurred.*
 
@@ -69,11 +69,11 @@ Languages: English, 한국어, Deutsch, Français, Español, Русский, 简
 
 WoW Forever용 제조법 도감입니다. **12개 전문 기술의 모든 제조법**(야영 제조법 포함)의 재료 · 필요 숙련도 · 배우는 곳을 보여 줍니다. 전문 기술 창 옆에 **배우지 않은 전문 기술 탭**과 **안 배운 제조법 탭**을 붙여 주고, 전문 기술이 하나도 없어도 `/ezpr`로 단독 창을 열 수 있습니다.
 
-![제조법 도감](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/ui_ko.png)
+![제조법 도감](https://raw.githubusercontent.com/ezwow-addons/EzWoW-ProfessionRecipes/master/docs/images/ui_ko.png)
 
-![올리기 계획](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/leveling_ko.png)
+![올리기 계획](https://raw.githubusercontent.com/ezwow-addons/EzWoW-ProfessionRecipes/master/docs/images/leveling_ko.png)
 
-![설정창](https://raw.githubusercontent.com/qqhrqqhr2/EzWoW-ProfessionRecipes/master/docs/images/settings_ko.png)
+![설정창](https://raw.githubusercontent.com/ezwow-addons/EzWoW-ProfessionRecipes/master/docs/images/settings_ko.png)
 
 *실제 게임 화면입니다(WoW Forever, 한국어 클라이언트). 캐릭터 · 다른 플레이어 이름과 채팅 내용은 가렸습니다.*
 
